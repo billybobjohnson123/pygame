@@ -17,6 +17,7 @@ color = (0, 0, 255)
 scale = 100
 objects = []
 
+
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -28,8 +29,15 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
             x, y = event.pos
-            liquid = Liquid(x, y, scale, pygame.time.get_ticks())
-            objects.append(liquid)
+            pickedup = False
+            for i in range(len(objects)):
+                if objects[i].source == [(x // scale) * scale, (y // scale) * scale]:
+                    objects[i].pickUp(pygame.time.get_ticks())
+                    pickedup = True
+            if not pickedup:
+                liquid = Liquid(x, y, scale, pygame.time.get_ticks(), 3)
+                objects.append(liquid)
+            
             
     # RENDER YOUR GAME HERE
   
@@ -42,10 +50,8 @@ while running:
         obj.tick(pygame.time.get_ticks())
         renderRectFromLiquid(obj, screen, color, scale)
 
+
     # flip() the display to put your work on screen
     pygame.display.flip()
     clock.tick(60)  # limits FPS to 60
 pygame.quit()
-
-
-
