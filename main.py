@@ -11,14 +11,16 @@ pygame.init()
 height = 900
 width = 900
 screen = pygame.display.set_mode((width, height))
+backround = pygame.surface.Surface((width, height))
 clock = pygame.time.Clock()
 running = True
 color = (0, 0, 255)
 scale = 100
 objects = []
-
+backround.fill((0,0,0))
 
 while running:
+    screen.blit(backround, (0,0))
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for i in range(1, height // scale):
@@ -49,7 +51,6 @@ while running:
     for obj in objects:
         obj.tick(pygame.time.get_ticks())
         renderRectFromLiquid(obj, screen, color, scale)
-
 
     # flip() the display to put your work on screen
     pygame.display.flip()

@@ -30,13 +30,11 @@ class Liquid:
         self.liquidPosition = newLiquidPositions
 
     def pickUp(self, pickuptime):
-        self.pickuptime = pickuptime
-
-        print(self.liquidPosition)
+        self.pickuptime = pickuptime   
         self.dryPositions.append(self.source)
         self.liquidPosition.remove(self.source)
         self.source = []
-        print(self.liquidPosition)
+
 
     def unflow(self):
         newDryPositions = []
@@ -49,6 +47,7 @@ class Liquid:
                 if (x+dx, y+dy) not in newDryPositionsSet:
                     newDryPositions.append([x+dx, y+dy])
                     newDryPositionsSet.add((x+dx, y+dy))
+        self.dryPositions = newDryPositions
         self.removeLiquidFromDry()
 
     def removeLiquidFromDry(self):
@@ -64,6 +63,4 @@ class Liquid:
         if self.pickuptime != 0:
             if (current_tick - self.pickuptime) // 500 > self.numberTimesDryed:
                 self.numberTimesDryed += 1
-                self.unflow()
-
-                print("ran")  
+                self.unflow() 
