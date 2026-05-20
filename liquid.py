@@ -1,6 +1,4 @@
 
-
-
 class Liquid:
     def __init__(self, x, y, scale, start_tick, maxDistance):
         self.maxDistance = maxDistance
@@ -15,15 +13,18 @@ class Liquid:
         self.pickuptime = 0
         self.numberTimesDryed = 0
 
-    def flow(self):
+    def flow(self, blocks):
+        block_indexes = set()
+        for block in blocks:
+            block_indexes.add((block.x, block.y))
         newLiquidPositions = []
         newLiquidPositionsSet = set()
         for x, y in self.liquidPosition:
-            if (x, y) not in newLiquidPositionsSet:
+            if (x, y) not in newLiquidPositionsSet and (x,y) not in block_indexes:
                 newLiquidPositions.append([x,y])
                 newLiquidPositionsSet.add((x,y))
             for dx, dy in self.directions:
-                if (x+dx, y+dy) not in newLiquidPositionsSet:
+                if (x+dx, y+dy) not in newLiquidPositionsSet and (x+dx, y+dy) not in block_indexes:
                     newLiquidPositions.append([x+dx, y+dy])
                     newLiquidPositionsSet.add((x+dx, y+dy))
 
@@ -55,11 +56,11 @@ class Liquid:
             if self.dryPositions[i] in self.liquidPosition:
                 self.liquidPosition.remove(self.dryPositions[i])
 
-    def tick(self, current_tick):
+    def tick(self, current_tick, blocks):
         if (current_tick - self.start_tick) // 500 > self.numberTimesFlowed:
             if self.numberTimesFlowed < self.maxDistance - 1:
                 self.numberTimesFlowed += 1
-                self.flow()
+                self.flow(blocks)
         if self.pickuptime != 0:
             if (current_tick - self.pickuptime) // 500 > self.numberTimesDryed:
                 self.numberTimesDryed += 1

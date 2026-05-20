@@ -1,13 +1,20 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 from liquid import Liquid
+from block import Block
 
-def renderRectFromLiquid(liquid, screen, color, scale):
+def renderRectFromLiquid(liquid, screen, sourceColor, liquidColor, scale):
+    pygame.draw.rect(screen, sourceColor,(liquid.source[0], liquid.source[1], scale, scale))
     for l in liquid.liquidPosition:
-        pygame.draw.rect(screen,color,(l[0], l[1], scale, scale))
+        if l != liquid.source:
+            pygame.draw.rect(screen,liquidColor,(l[0], l[1], scale, scale))
+def renderRectFromBlock(blocks, screen, color, scale):
+    for b in blocks:
+        pygame.draw.rect(screen, color, (b.x, b.y,scale, scale))
 
 # pygame setup
 pygame.init()
+sourceColor =  (128, 0, 128)
 height = 900
 width = 900
 screen = pygame.display.set_mode((width, height))
@@ -18,6 +25,7 @@ color = (0, 0, 255)
 scale = 100
 objects = []
 backround.fill((0,0,0))
+blocks = []
 
 while running:
     screen.blit(backround, (0,0))
@@ -29,7 +37,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONUP:  # or MOUSEBUTTONDOWN depending on what you want.
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1: 
             x, y = event.pos
             pickedup = False
             for i in range(len(objects)):
@@ -37,9 +45,12 @@ while running:
                     objects[i].pickUp(pygame.time.get_ticks())
                     pickedup = True
             if not pickedup:
-                liquid = Liquid(x, y, scale, pygame.time.get_ticks(), 3)
+                liquid = Liquid(x, y, scale, pygame.time.get_ticks(), 20)
                 objects.append(liquid)
-            
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 3:
+            x, y = event.pos
+            block = Block(x, y, scale, (0, 0, 0))
+            blocks.append(block)
             
     # RENDER YOUR GAME HERE
   
@@ -49,9 +60,10 @@ while running:
 
 
     for obj in objects:
-        obj.tick(pygame.time.get_ticks())
-        renderRectFromLiquid(obj, screen, color, scale)
-
+        obj.tick(pygame.time.get_ticks(), blocks)
+        renderRectFromLiquid(obj, screen, sourceColor, color, scale)
+    renderRectFromBlock(blocks, screen, (255, 255, 255), scale)
+            
     # flip() the display to put your work on screen
     pygame.display.flip()
     clock.tick(60)  # limits FPS to 60
